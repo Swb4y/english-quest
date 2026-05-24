@@ -1,5 +1,7 @@
 const CACHE_NAME = 'english-quest-v1';
-const APP_SHELL = ['/', '/index.html', '/manifest.webmanifest', '/icons/icon.svg'];
+const scopePath = new URL(self.registration.scope).pathname.replace(/\/$/, '');
+const fromScope = (path) => `${scopePath}${path}` || path;
+const APP_SHELL = [fromScope('/'), fromScope('/index.html'), fromScope('/manifest.webmanifest'), fromScope('/icons/icon.svg')];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(APP_SHELL)));
@@ -23,7 +25,7 @@ self.addEventListener('fetch', (event) => {
   event.respondWith(
     caches.match(event.request).then((cached) => {
       if (cached) return cached;
-      return fetch(event.request).catch(() => caches.match('/index.html'));
+      return fetch(event.request).catch(() => caches.match(fromScope('/index.html')));
     }),
   );
 });
