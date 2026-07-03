@@ -1,65 +1,86 @@
-import type { Lesson } from '../types';
+import type { Progress, Unit } from '../types';
 
 type MapViewProps = {
-  lessons: Lesson[];
-  completedLessonIds: string[];
-  unlockedLessonCount: number;
-  onStart: (lesson: Lesson) => void;
+  units: Unit[];
+  progress: Progress;
+  unlockedUnitCount: number;
+  onStart: (unit: Unit) => void;
 };
 
-export function MapView({ lessons, completedLessonIds, unlockedLessonCount, onStart }: MapViewProps) {
+export function MapView({ units, progress, unlockedUnitCount, onStart }: MapViewProps) {
   return (
-    <main className="mx-auto max-w-md px-4 pb-28 pt-5">
-      <header>
-        <p className="text-sm font-black uppercase tracking-[0.18em] text-quest-blue">Quest Map</p>
-        <h1 className="mt-1 text-3xl font-black text-quest-ink">Bright City Route</h1>
-      </header>
+    <main className="min-h-screen bg-hero px-5 pb-28 pt-8">
+      <section className="mx-auto max-w-md">
+        <header className="animate-pop-in">
+          <p className="text-sm font-bold text-slate-500">Öğrenme Yolculuğun 🧭</p>
+          <h1 className="mt-1 text-3xl font-black text-quest-ink">Ünite Haritası</h1>
+          <p className="mt-2 text-sm font-semibold leading-6 text-slate-500">
+            Her üniteyi bitirdiğinde bir sonraki açılır. Bitirdiğin ünitelere istediğin zaman geri dönebilirsin.
+          </p>
+        </header>
 
-      <section className="mt-5 space-y-3">
-        {lessons.map((lesson, index) => {
-          const complete = completedLessonIds.includes(lesson.id);
-          const unlocked = index < unlockedLessonCount;
+        <div className="relative mt-8">
+          <div className="absolute bottom-8 left-1/2 top-4 w-1 -translate-x-1/2 rounded-full bg-indigo-200/70" />
+          <div className="grid gap-5">
+            {units.map((unit, index) => {
+              const done = progress.completedUnitIds.includes(unit.id);
+              const unlocked = index < unlockedUnitCount;
+              const isNext = unlocked && !done;
+              const side = index % 2 === 0 ? 'justify-self-start' : 'justify-self-end';
+              const score = progress.unitScores[unit.id];
 
-          return (
-            <article
-              key={lesson.id}
-              className={`rounded-3xl border p-4 shadow-soft ${
-                complete
-                  ? 'border-emerald-200 bg-emerald-50'
-                  : unlocked
-                    ? 'border-indigo-100 bg-white'
-                    : 'border-slate-100 bg-slate-100'
-              }`}
-            >
-              <div className="flex items-center gap-4">
-                <div
-                  className={`grid h-12 w-12 shrink-0 place-items-center rounded-2xl text-lg font-black ${
-                    complete
-                      ? 'bg-emerald-500 text-white'
-                      : unlocked
-                        ? 'bg-quest-blue text-white'
-                        : 'bg-slate-300 text-slate-500'
+              return (
+                <button
+                  key={unit.id}
+                  type="button"
+                  disabled={!unlocked}
+                  onClick={() => onStart(unit)}
+                  className={`relative w-[86%] rounded-3xl border p-4 text-left shadow-card transition animate-slide-up ${side} ${
+                    done
+                      ? 'border-emerald-200 bg-white active:scale-95'
+                      : isNext
+                        ? 'border-transparent bg-gradient-quest text-white shadow-soft active:scale-95'
+                        : 'border-slate-200 bg-white/60 opacity-70'
                   }`}
+                  style={{ animationDelay: `${index * 0.05}s` }}
                 >
-                  {complete ? '✓' : index + 1}
-                </div>
-                <div className="min-w-0 flex-1">
-                  <h2 className="truncate text-lg font-black text-quest-ink">{lesson.theme}</h2>
-                  <p className="text-sm font-bold text-slate-500">{lesson.cityStop}</p>
-                </div>
-              </div>
-              <p className="mt-3 text-sm leading-6 text-slate-600">{lesson.story}</p>
-              <button
-                type="button"
-                onClick={() => onStart(lesson)}
-                disabled={!unlocked}
-                className="mt-4 w-full rounded-2xl bg-quest-blue px-4 py-3 text-sm font-black text-white disabled:bg-slate-300"
-              >
-                {complete ? 'Replay Mission' : unlocked ? 'Start Mission' : 'Locked'}
-              </button>
-            </article>
-          );
-        })}
+                  <div className="flex items-center gap-3">
+                    <span
+                      className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl text-3xl ${
+                        done ? 'bg-emerald-100' : isNext ? 'bg-white/20 animate-bounce-soft' : 'bg-slate-100 grayscale'
+                      }`}
+                    >
+                      {unlocked ? unit.emoji : '🔒'}
+                    </span>
+                    <div className="min-w-0">
+                      <p
+                        className={`text-[11px] font-black uppercase tracking-wider ${
+                          done ? 'text-emerald-500' : isNext ? 'text-indigo-200' : 'text-slate-400'
+                        }`}
+                      >
+                        Ünite {index + 1} • {unit.titleEn}
+                      </p>
+                      <h2 className={`truncate text-lg font-black ${isNext ? 'text-white' : 'text-quest-ink'}`}>
+                        {unit.title}
+                      </h2>
+                      <p
+                        className={`text-xs font-bold ${
+                          done ? 'text-emerald-600' : isNext ? 'text-indigo-100' : 'text-slate-400'
+                        }`}
+                      >
+                        {done
+                          ? `✅ Tamamlandı${typeof score === 'number' ? ` • Başarı %${score}` : ''}`
+                          : isNext
+                            ? '▶️ Sıradaki ders — hadi başla!'
+                            : 'Önceki üniteyi bitirince açılır'}
+                      </p>
+                    </div>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
       </section>
     </main>
   );

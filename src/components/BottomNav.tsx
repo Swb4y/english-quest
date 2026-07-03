@@ -1,37 +1,33 @@
-type Tab = 'home' | 'map' | 'settings';
+export type Tab = 'home' | 'map' | 'review' | 'profile';
 
 type BottomNavProps = {
   activeTab: Tab;
   onChange: (tab: Tab) => void;
 };
 
-const tabs: Array<{ id: Tab; label: string; icon: string }> = [
-  { id: 'home', label: 'Home', icon: '★' },
-  { id: 'map', label: 'Map', icon: '⌖' },
-  { id: 'settings', label: 'Settings', icon: '⚙' },
+const tabs: { id: Tab; label: string; emoji: string }[] = [
+  { id: 'home', label: 'Ana Sayfa', emoji: '🏠' },
+  { id: 'map', label: 'Yolculuk', emoji: '🗺️' },
+  { id: 'review', label: 'Tekrar', emoji: '🔁' },
+  { id: 'profile', label: 'Profil', emoji: '⭐' },
 ];
 
 export function BottomNav({ activeTab, onChange }: BottomNavProps) {
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-20 border-t border-indigo-100 bg-white/95 px-4 py-2 backdrop-blur">
-      <div className="mx-auto grid max-w-md grid-cols-3 gap-2">
+    <nav className="fixed inset-x-0 bottom-0 z-20 border-t border-indigo-100 bg-white/95 backdrop-blur safe-bottom">
+      <div className="mx-auto grid max-w-md grid-cols-4 gap-1 px-4 pt-2">
         {tabs.map((tab) => {
-          const active = activeTab === tab.id;
+          const active = tab.id === activeTab;
           return (
             <button
               key={tab.id}
               type="button"
               onClick={() => onChange(tab.id)}
-              className={`rounded-2xl px-3 py-3 text-sm font-bold transition ${
-                active
-                  ? 'bg-quest-blue text-white shadow-soft'
-                  : 'bg-indigo-50 text-indigo-700 hover:bg-indigo-100'
+              className={`flex flex-col items-center gap-0.5 rounded-2xl px-1 py-1.5 text-[11px] font-extrabold transition ${
+                active ? 'bg-quest-blue/10 text-quest-blue' : 'text-slate-400 hover:text-slate-600'
               }`}
-              aria-current={active ? 'page' : undefined}
             >
-              <span className="mr-1" aria-hidden="true">
-                {tab.icon}
-              </span>
+              <span className={`text-xl ${active ? 'animate-bounce-soft' : ''}`}>{tab.emoji}</span>
               {tab.label}
             </button>
           );

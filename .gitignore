@@ -10,3 +10,8 @@ yarn-error.log*
 pnpm-debug.log*
 .vercel
 .netlify
+*.tsbuildinfo
+vite.config.js
+vite.config.d.ts
+tailwind.config.js
+tailwind.config.d.ts

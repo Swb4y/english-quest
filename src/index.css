@@ -3,8 +3,8 @@
 @tailwind utilities;
 
 :root {
-  color: #172033;
-  background: #eef2ff;
+  color: #1e1b4b;
+  background: #f5f3ff;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -23,6 +23,29 @@ textarea {
   font: inherit;
 }
 
+button {
+  -webkit-tap-highlight-color: transparent;
+}
+
 .safe-bottom {
   padding-bottom: max(1rem, env(safe-area-inset-bottom));
+}
+
+.bg-hero {
+  background:
+    radial-gradient(1100px 500px at 50% -220px, rgba(124, 58, 237, 0.22), transparent 70%),
+    radial-gradient(900px 420px at 110% 10%, rgba(56, 189, 248, 0.16), transparent 65%),
+    #f5f3ff;
+}
+
+.bg-gradient-quest {
+  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 55%, #a855f7 100%);
+}
+
+.bg-gradient-sunset {
+  background: linear-gradient(135deg, #f59e0b 0%, #f97316 60%, #fb7185 100%);
+}
+
+.bg-gradient-mint {
+  background: linear-gradient(135deg, #10b981 0%, #22c55e 60%, #84cc16 100%);
 }

@@ -1,70 +1,80 @@
 import { useMemo, useState } from 'react';
-import { BottomNav } from './components/BottomNav';
+import { BottomNav, type Tab } from './components/BottomNav';
 import { HomeView } from './components/HomeView';
-import { LessonView } from './components/LessonView';
-import { LevelSelect } from './components/LevelSelect';
 import { MapView } from './components/MapView';
-import { SettingsView } from './components/SettingsView';
-import { lessons } from './data/lessons';
+import { ProfileView } from './components/ProfileView';
+import { ReviewView } from './components/ReviewView';
+import { UnitView } from './components/UnitView';
+import { Welcome } from './components/Welcome';
+import { units } from './data/units';
 import { useProgress } from './hooks/useProgress';
-import type { Lesson } from './types';
-
-type Tab = 'home' | 'map' | 'settings';
+import type { Unit } from './types';
 
 export default function App() {
   const {
     progress,
-    currentLevelNumber,
+    level,
+    levelPercent,
     completedCount,
-    unlockedLessonCount,
-    selectLevel,
-    completeLesson,
+    unlockedUnitCount,
+    start,
+    completeUnit,
+    recordReview,
     resetProgress,
-  } = useProgress(lessons.length);
+  } = useProgress(units.length);
   const [activeTab, setActiveTab] = useState<Tab>('home');
-  const [activeLesson, setActiveLesson] = useState<Lesson | null>(null);
+  const [activeUnit, setActiveUnit] = useState<Unit | null>(null);
 
-  const todayLesson = useMemo(
-    () => lessons.find((lesson) => !progress.completedLessonIds.includes(lesson.id)),
-    [progress.completedLessonIds],
+  const nextUnit = useMemo(
+    () => units.find((unit) => !progress.completedUnitIds.includes(unit.id)),
+    [progress.completedUnitIds],
   );
 
-  if (!progress.selectedLevel) {
-    return <LevelSelect onSelect={selectLevel} />;
+  if (!progress.started) {
+    return <Welcome onStart={start} />;
   }
 
-  if (activeLesson) {
+  if (activeUnit) {
     return (
-      <LessonView
-        lesson={activeLesson}
-        onBack={() => setActiveLesson(null)}
-        onComplete={(score) => completeLesson(activeLesson.id, score)}
+      <UnitView
+        unit={activeUnit}
+        onExit={() => setActiveUnit(null)}
+        onComplete={(correct, total) =>
+          completeUnit({
+            unitId: activeUnit.id,
+            correct,
+            total,
+            wordEns: activeUnit.words.map((word) => word.en),
+          })
+        }
       />
     );
   }
 
   return (
-    <div className="min-h-screen bg-indigo-50 text-quest-ink">
+    <div className="min-h-screen bg-quest-cream text-quest-ink">
       {activeTab === 'home' && (
         <HomeView
           progress={progress}
-          appLevel={currentLevelNumber}
+          level={level}
+          levelPercent={levelPercent}
           completedCount={completedCount}
-          totalLessons={lessons.length}
-          todayLesson={todayLesson}
-          onStart={setActiveLesson}
+          totalUnits={units.length}
+          nextUnit={nextUnit}
+          onStart={setActiveUnit}
         />
       )}
       {activeTab === 'map' && (
         <MapView
-          lessons={lessons}
-          completedLessonIds={progress.completedLessonIds}
-          unlockedLessonCount={unlockedLessonCount}
-          onStart={setActiveLesson}
+          units={units}
+          progress={progress}
+          unlockedUnitCount={unlockedUnitCount}
+          onStart={setActiveUnit}
         />
       )}
-      {activeTab === 'settings' && (
-        <SettingsView progress={progress} onSelectLevel={selectLevel} onReset={resetProgress} />
+      {activeTab === 'review' && <ReviewView progress={progress} onFinish={recordReview} />}
+      {activeTab === 'profile' && (
+        <ProfileView progress={progress} level={level} onReset={resetProgress} />
       )}
       <BottomNav activeTab={activeTab} onChange={setActiveTab} />
     </div>

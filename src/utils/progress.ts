@@ -1,14 +1,17 @@
 import type { Progress } from '../types';
 
-export const STORAGE_KEY = 'english-quest-progress';
+export const STORAGE_KEY = 'english-quest-progress-v2';
 
 export const defaultProgress: Progress = {
-  selectedLevel: null,
+  started: false,
   xp: 0,
   streak: 0,
   lastVisitDate: null,
-  completedLessonIds: [],
-  quizScores: {},
+  completedUnitIds: [],
+  unitScores: {},
+  learnedWords: [],
+  totalExercises: 0,
+  totalCorrect: 0,
 };
 
 export function todayKey(date = new Date()) {
@@ -42,12 +45,13 @@ export function loadProgress(): Progress {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return normalizeVisit(defaultProgress);
 
-    const parsed = JSON.parse(raw) as Progress;
+    const parsed = JSON.parse(raw) as Partial<Progress>;
     return normalizeVisit({
       ...defaultProgress,
       ...parsed,
-      completedLessonIds: parsed.completedLessonIds ?? [],
-      quizScores: parsed.quizScores ?? {},
+      completedUnitIds: parsed.completedUnitIds ?? [],
+      unitScores: parsed.unitScores ?? {},
+      learnedWords: parsed.learnedWords ?? [],
     });
   } catch {
     return normalizeVisit(defaultProgress);

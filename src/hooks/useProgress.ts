@@ -1,54 +1,77 @@
 import { useEffect, useMemo, useState } from 'react';
-import type { Level, Progress } from '../types';
+import type { Progress } from '../types';
 import { defaultProgress, loadProgress, normalizeVisit, saveProgress, STORAGE_KEY } from '../utils/progress';
 
-export function useProgress(totalLessons: number) {
+export type UnitResult = {
+  unitId: string;
+  correct: number;
+  total: number;
+  wordEns: string[];
+};
+
+export function useProgress(totalUnits: number) {
   const [progress, setProgress] = useState<Progress>(() => loadProgress());
 
   useEffect(() => {
     saveProgress(progress);
   }, [progress]);
 
-  const currentLevelNumber = useMemo(() => Math.floor(progress.xp / 120) + 1, [progress.xp]);
-  const completedCount = progress.completedLessonIds.length;
-  const unlockedLessonCount = Math.min(totalLessons, completedCount + 1);
+  const level = useMemo(() => Math.floor(progress.xp / 150) + 1, [progress.xp]);
+  const levelPercent = useMemo(() => Math.round(((progress.xp % 150) / 150) * 100), [progress.xp]);
+  const completedCount = progress.completedUnitIds.length;
+  const unlockedUnitCount = Math.min(totalUnits, completedCount + 1);
 
-  function selectLevel(level: Level) {
-    setProgress((current) => ({ ...current, selectedLevel: level }));
+  function start() {
+    setProgress((current) => ({ ...current, started: true }));
   }
 
-  function completeLesson(lessonId: string, quizScore: number) {
+  function completeUnit({ unitId, correct, total, wordEns }: UnitResult) {
     setProgress((current) => {
-      const alreadyCompleted = current.completedLessonIds.includes(lessonId);
-      const quizXp = quizScore * 10;
-      const completionBonus = alreadyCompleted ? 0 : 30;
+      const alreadyCompleted = current.completedUnitIds.includes(unitId);
+      const score = total > 0 ? Math.round((correct / total) * 100) : 0;
+      const earned = correct * 10 + (alreadyCompleted ? 0 : 40);
+      const learnedWords = Array.from(new Set([...current.learnedWords, ...wordEns]));
 
       return {
         ...current,
-        xp: current.xp + quizXp + completionBonus,
-        completedLessonIds: alreadyCompleted
-          ? current.completedLessonIds
-          : [...current.completedLessonIds, lessonId],
-        quizScores: {
-          ...current.quizScores,
-          [lessonId]: Math.max(current.quizScores[lessonId] ?? 0, quizScore),
+        xp: current.xp + earned,
+        completedUnitIds: alreadyCompleted
+          ? current.completedUnitIds
+          : [...current.completedUnitIds, unitId],
+        unitScores: {
+          ...current.unitScores,
+          [unitId]: Math.max(current.unitScores[unitId] ?? 0, score),
         },
+        learnedWords,
+        totalExercises: current.totalExercises + total,
+        totalCorrect: current.totalCorrect + correct,
       };
     });
   }
 
+  function recordReview(correct: number, total: number) {
+    setProgress((current) => ({
+      ...current,
+      xp: current.xp + correct * 5,
+      totalExercises: current.totalExercises + total,
+      totalCorrect: current.totalCorrect + correct,
+    }));
+  }
+
   function resetProgress() {
-    setProgress(normalizeVisit(defaultProgress));
     localStorage.removeItem(STORAGE_KEY);
+    setProgress(normalizeVisit(defaultProgress));
   }
 
   return {
     progress,
-    currentLevelNumber,
+    level,
+    levelPercent,
     completedCount,
-    unlockedLessonCount,
-    selectLevel,
-    completeLesson,
+    unlockedUnitCount,
+    start,
+    completeUnit,
+    recordReview,
     resetProgress,
   };
 }

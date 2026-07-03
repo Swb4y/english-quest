@@ -1,95 +1,94 @@
-# English Quest
+# English Quest — Sıfırdan İngilizce 🦉
 
-English Quest is a mobile-first, gamified English learning web app built with Vite, React, TypeScript, and Tailwind CSS.
+English Quest, **hiç İngilizce bilmeyenler** için tasarlanmış, tamamı Türkçe arayüzlü, oyunlaştırılmış bir İngilizce öğrenme uygulamasıdır. Vite, React, TypeScript ve Tailwind CSS ile geliştirilmiştir.
 
-Users choose a level, complete short daily missions, earn XP, keep a daily streak, and move through a simple story map set in an English-speaking city. This first version uses mock lesson data and stores progress in LocalStorage.
+Kayıt yok, ceza yok, stres yok: kendi hızında ilerlersin, ilerlemen cihazında saklanır ve uygulama çevrimdışı da çalışır (PWA).
 
-## Features
+## Özellikler
 
-- Level selection: A1, A2, B1
-- Daily mission dashboard with XP, quest level, streak, and completed lessons
-- Story mode across 8 city missions
-- Mission map with locked and unlocked lessons
-- Each lesson includes:
-  - 5 vocabulary cards
-  - 5-question mini quiz
-  - 1 dialogue completion task
-  - 1 sentence writing task
-- XP rewards for quiz answers and mission completion
-- LocalStorage progress saving
-- Reset progress button in settings
-- Mobile-first responsive card UI
-- PWA basics: manifest, app icon placeholder, and service worker
+- 🇹🇷 **Tamamı Türkçe arayüz** — hiç İngilizce bilmeden rahatça kullanılır
+- 🐣 **Sıfırdan başlayan müfredat** — 12 ünite, 96 temel kelime, 48 kalıp cümle
+- 🔊 **Sesli telaffuz** — her kelime ve örnek cümle tarayıcının ses motoruyla dinlenebilir (Web Speech API)
+- 📖 **Kelime kartları** — emoji, Türkçe anlam, Türkçe harflerle okunuş ve örnek cümle
+- 🎯 **5 farklı alıştırma türü**:
+  - Çoktan seçmeli (İngilizce → Türkçe)
+  - Çoktan seçmeli (Türkçe → İngilizce)
+  - Dinleme (duyduğun kelimeyi bul)
+  - Eşleştirme (İngilizce–Türkçe çiftleri)
+  - Cümle kurma (karışık kelimelerden cümle diz)
+- 🎮 **Oyunlaştırma** — XP, seviye, günlük seri, 6 rozet, konfetili kutlamalar
+- 🔁 **Tekrar modu** — öğrendiğin kelimelerden karışık hızlı tekrar turları
+- 📔 **Kelime defteri** — öğrendiğin tüm kelimeler telaffuzlarıyla tek listede
+- 🗺️ **Ünite haritası** — her ünite bitince yenisi açılır
+- 📱 **Mobil öncelikli tasarım** — gradyanlar, animasyonlar, PWA desteği
 
-## Lessons
+## Üniteler
 
-- At the Airport
-- At a Café
-- Meeting New People
-- Shopping
-- Hotel Check-in
-- Job Interview
-- Asking for Directions
-- Doctor Visit
+1. 👋 Selamlaşma
+2. 🔢 Sayılar
+3. 🎨 Renkler
+4. 👨‍👩‍👧 Aile
+5. 🍎 Yiyecek ve İçecek
+6. 🐶 Hayvanlar
+7. 📅 Günler
+8. 🧍 Vücudumuz
+9. 🏠 Evimiz
+10. 👕 Kıyafetler
+11. ☀️ Hava Durumu
+12. 🏙️ Şehirde
 
-## Tech Stack
+## Teknolojiler
 
-- Vite
-- React
-- TypeScript
+- Vite + React + TypeScript
 - Tailwind CSS
-- LocalStorage
-- PWA manifest and service worker
+- Web Speech API (telaffuz)
+- LocalStorage (ilerleme kaydı)
+- PWA (manifest + service worker)
 
-## Getting Started
+## Geliştirme
 
-Install dependencies:
+Bağımlılıkları kur:
 
 ```bash
 npm install
 ```
 
-Start the development server:
+Geliştirme sunucusunu başlat:
 
 ```bash
 npm run dev
 ```
 
-Build for production:
+Üretim derlemesi:
 
 ```bash
 npm run build
 ```
 
-Preview the production build:
+Derlemeyi önizle:
 
 ```bash
 npm run preview
 ```
 
-## Deploy
+## Yayınlama
 
-### Vercel
+### GitHub Pages (docs/ klasörü)
 
-1. Push the project to a public GitHub repository.
-2. Import the repository in Vercel.
-3. Use the default Vite settings:
-   - Build command: `npm run build`
-   - Output directory: `dist`
-4. Deploy.
+```bash
+npm run build:pages
+```
 
-### Netlify
+Bu komut uygulamayı `docs/` klasörüne derler. Repo ayarlarından **Settings → Pages → Deploy from a branch → /docs** seçiliyse uygulama otomatik yayınlanır.
 
-1. Push the project to a public GitHub repository.
-2. Import the repository in Netlify.
-3. Use:
-   - Build command: `npm run build`
-   - Publish directory: `dist`
-4. Deploy.
+### Vercel / Netlify
 
-## Notes
+- Build komutu: `npm run build`
+- Çıktı klasörü: `dist`
 
-- No backend is required.
-- No real AI API is used.
-- Lesson content is currently mock data in `src/data/lessons.ts`.
-- Progress is saved only on the current device through LocalStorage.
+## Notlar
+
+- Arka uç (backend) gerektirmez, tamamen tarayıcıda çalışır.
+- Ders içerikleri `src/data/units.ts` dosyasındadır; yeni ünite eklemek için bu dosyaya ekleme yapmak yeterlidir.
+- İlerleme yalnızca kullanılan cihazda, LocalStorage'da saklanır.
+- Telaffuz için tarayıcının Web Speech API desteği kullanılır (tüm modern tarayıcılarda mevcuttur).
